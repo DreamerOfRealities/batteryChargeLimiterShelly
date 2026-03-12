@@ -1,0 +1,9 @@
+---  # EXAMPLE CONFIG WITH CAPS TO BE CHANGED TO YOUR OWN VALUES - yaml file has to be put in the same folder as the executable
+shellyName: MYNETWORKID #Shelly network identifier, e.g. shellyplug-s-A1B2C3
+shellyUser: MYUSERNAME #Shelly user
+shellyPass: MYPASSWORD #Shelly password
+battMax: 75 #/percent, when stop charging
+battMin: 25 # /percent, when start charging
+tick: 60 # /seconds, how often to evaluate status
+vocationality: 1 #/level of notifications in cli, 0:silent / 1:errors only / 2:errors & warnings / 3:all notifications
+log: n #/bool, keep a log file of battery values over time? WIP
