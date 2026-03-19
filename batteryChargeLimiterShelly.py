@@ -171,6 +171,7 @@ while powerConnected: #infinite loop
     newShellyIsOn = readSensor()
     if shellyIsOn != newShellyIsOn: #external change detected
         errorMessage(2, "External variance in charging status detected (" + ["is not plugged in?","freshly plugged in?"][newShellyIsOn] + ").")
+        errorMessage(3, "with shellyIsOn=" + str(shellyIsOn) + " and newShellyIsOn=" + str(newShellyIsOn))
         resetTimer()
     shellyIsOn = newShellyIsOn
     if percy > battMax and shellyIsOn:         
