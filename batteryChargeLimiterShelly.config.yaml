@@ -6,4 +6,4 @@ battMax: 75 #/percent, when stop charging
 battMin: 25 # /percent, when start charging
 tick: 60 # /seconds, how often to evaluate status
 vocationality: 1 #/level of notifications in cli, 0:silent / 1:errors only / 2:errors & warnings / 3:all notifications
-log: n #/bool, keep a log file of battery values over time? WIP
+log: False #/bool, keep a log file of battery values over time

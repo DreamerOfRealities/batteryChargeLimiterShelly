@@ -69,8 +69,16 @@ def printPercy():
     print("%7s" % time.strftime("%H:%M h"), "█"*percy + "░"*(100-percy), "%3d%%" % percy)
     return 0
 
+def addLog(val):
+    try:
+        with Path().absolute().joinpath("batteryChargeLimiterShelly.log.csv").open(mode="a") as file:
+            myError = file.write(str(round(time.time())) + ";" + str(val) + "\n")
+    except:
+        errorMessage(1, "Could not add value to log (" + str(myError) + ").")
+    return 0
+
 def readSettings(): #parse yaml (yes there are parsers out there but I wanted to build one myself)
-    global battMax, battMin, tick, vocationality, shellyName, shellyUser, shellyPass
+    global battMax, battMin, tick, vocationality, shellyName, shellyUser, shellyPass, toLog
     try:
         with Path().absolute().joinpath("batteryChargeLimiterShelly.config.yaml").open() as set: #...from file
             set = set.read().split("\n")
@@ -120,6 +128,8 @@ def readSettings(): #parse yaml (yes there are parsers out there but I wanted to
                             shellyUser = newVar[1].strip()
                         case "shellyPass":
                             shellyPass = newVar[1].strip()
+                        case "log":
+                            toLog = bool(newVar[1].strip())
                         case _:
                             errorMessage(3,"Unknown variable encountered in config.yaml (" + newVar[0].strip() + ").")
         if not (shellyName and shellyUser and shellyPass): #check for minimum set of settings
@@ -140,11 +150,12 @@ vocationality = 1 #/level; 0:silent, 1:errors only, 2:errors & warnings, 3:all n
 shellyName = ""
 shellyUser = ""
 shellyPass = ""
+toLog = False # bool
 if readSettings():
     errorMessage(0,"Could not read configuration (batteryChargeLimiterShelly.config.yaml).")
     input("Press Enter to quit...")
     quit()
-print("Settings for", shellyName, ":\n - Start charging below", battMin, "%\n - Stop charging above", battMax, "%\n - Tickperiod is", tick, "seconds\n - notifications about", ["fatal errors","errors only","also warnings","any"][vocationality], "\n")
+print("Settings for", shellyName + ":\n - start charging below", str(battMin) + "%\n - stop charging above", str(battMax) + "%\n - tickperiod is", str(tick) + "s\n - notifications about", ["fatal errors","errors only","warnings also","any"][vocationality], "\n - logging is", "enabled" if toLog else "disabled", "\n")
 
 # Initialization 2/2 - internal
 powerConnected = 1
@@ -169,6 +180,8 @@ while powerConnected: #infinite loop
 
     # Check if action neccessary (based on battery percentage & charging status)
     newShellyIsOn = readSensor()
+    if toLog:
+        addLog(percy)
     if shellyIsOn != newShellyIsOn: #external change detected
         errorMessage(2, "External variance in charging status detected (" + ["is not plugged in?","freshly plugged in?"][newShellyIsOn] + ").")
         errorMessage(3, "with shellyIsOn=" + str(shellyIsOn) + " and newShellyIsOn=" + str(newShellyIsOn))
